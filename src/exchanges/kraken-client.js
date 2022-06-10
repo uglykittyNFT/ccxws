@@ -70,7 +70,7 @@ class KrakenClient extends BasicClient {
       if (wsName) {
         this.fromRestMap.set(restName, wsName);
         this.fromRestMap.set(result[symbol].altname, wsName);
-        this.fromWsMap.set(wsName, result[symbol].altname || restName);
+        this.fromWsMap.set(wsName, restName);
       }
     }
   }
