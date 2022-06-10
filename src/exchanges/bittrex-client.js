@@ -72,21 +72,28 @@ class BittrexClient extends BasicClient {
     );
   }
 
-  _sendSubTicker() {
+  _sendSubTicker(remote_id) {
     if (this._subbedTickers) return;
     this._subbedTickers = true;
     this._wss.send(
       JSON.stringify({
         H: "c3",
         M: "Subscribe",
-        A: [["market_summaries"]],
+        A: [[`ticker_${remote_id}`]],
         I: ++this._messageId,
       })
     );
   }
 
-  _sendUnsubTicker() {
-    // no-op
+  _sendUnsubTicker(remote_id) {
+    this._wss.send(
+        JSON.stringify({
+          H: "c3",
+          M: "Unsubscribe",
+          A: [[`ticker_${remote_id}`]],
+          I: ++this._messageId,
+        })
+      );
   }
 
   _sendSubTrades(remote_id) {
@@ -230,7 +237,7 @@ class BittrexClient extends BasicClient {
         this._watcher.markAlive();
       }
 
-      if (msg.M === "marketSummaries") {
+      if (msg.M === "ticker") {
         for (let a of msg.A) {
           zlib.inflateRaw(Buffer.from(a, "base64"), this._processTickers);
         }
@@ -286,32 +293,32 @@ class BittrexClient extends BasicClient {
       return;
     }
 
-    for (let datum of msg.deltas) {
-      let market = this._tickerSubs.get(datum.symbol);
-      if (!market) continue;
+    let market = this._tickerSubs.get(msg.symbol);
+    if (!market) return;
 
-      let ticker = this._constructTicker(datum, market);
-      this.emit("ticker", ticker, market);
-    }
+    let ticker = this._constructTicker(msg, market);
+    this.emit("ticker", ticker, market);
   }
 
   _constructTicker(msg, market) {
-    let { high, low, volume, quoteVolume, percentChange, updatedAt } = msg;
+
+    let { symbol, lastTradeRate, bidRate, askRate } = msg;
+    let { base, quote } = symbol.split('-');
     return new Ticker({
       exchange: this._name,
-      base: market.base,
-      quote: market.quote,
-      timestamp: moment.utc(updatedAt).valueOf(),
-      last: undefined,
-      open: undefined,
-      high: high,
-      low: low,
-      volume: volume,
-      quoteVolume: quoteVolume,
-      change: undefined,
-      changePercent: percentChange,
-      bid: undefined,
-      ask: undefined,
+      base: base,
+      quote: quote,
+    //   timestamp: moment.utc(updatedAt).valueOf(),
+      last: lastTradeRate,
+    //   open: undefined,
+    //   high: undefined,
+    //   low: undefined,
+    //   volume: undefined,
+    //   quoteVolume: undefined,
+    //   change: undefined,
+    //   changePercent: undefined,
+      bid: bidRate,
+      ask: askRate,
     });
   }
 
