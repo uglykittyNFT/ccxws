@@ -1,0 +1,41 @@
+{
+  "name": "ccxws",
+  "version": "0.43.29",
+  "description": "Websocket client for 37 cryptocurrency exchanges",
+  "keywords": [
+    "bitmex",
+    "binance",
+    "coinbase",
+    "cryptocurrency",
+    "exchange",
+    "websocket",
+    "realtime"
+  ],
+  "author": "Brian Mancini <bmancini@gmail.com>",
+  "license": "MIT",
+  "main": "src/index.js",
+  "scripts": {
+    "format:fix": "prettier --write  \"src/**\" \"__tests__/**\"",
+    "format": "prettier --check \"src/**\" \"__tests__/**\"",
+    "lint": "eslint src __tests__",
+    "test": "nyc --reporter=text mocha --recursive \"__tests__\""
+  },
+  "repository": "altangent/ccxws",
+  "dependencies": {
+    "crc": "^3.8.0",
+    "decimal.js": "^10.2.0",
+    "moment": "^2.26.0",
+    "moment-timezone": "^0.5.34",
+    "pusher-js": "^4.4.0",
+    "semaphore": "^1.1.0",
+    "ws": "^7.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "mocha": "^6.2.3",
+    "nyc": "^15.1.0",
+    "prettier": "^1.19.1",
+    "sinon": "^7.5.0"
+  }
+}
