@@ -84,18 +84,21 @@ class LiquidClient extends BasicClient {
     let uri = "https://api.liquid.com/products";
     let results = await https.get(uri);
     for (let result of results) {
-      this.productIdMap.set(result.currency_pair_code.toLowerCase(), result.id);
+    //   this.productIdMap.set(result.currency_pair_code.toLowerCase(), result.id);
+      this.productIdMap.set(result.id, result.currency_pair_code.toLowerCase());
     }
   }
 
   _sendSubTicker(remote_id) {
     remote_id = remote_id.toLowerCase();
     const product_id = this.productIdMap.get(remote_id);
+
     this._wss.send(
       JSON.stringify({
         event: "pusher:subscribe",
         data: {
-          channel: `product_cash_${remote_id}_${product_id}`,
+        //   channel: `product_cash_${remote_id}_${product_id}`,
+            channel: `product_cash_${product_id}_${remote_id}`,
         },
       })
     );
@@ -227,7 +230,7 @@ class LiquidClient extends BasicClient {
       return;
     }
 
-    let remote_id = /(product_cash_)(\w+)_\d+/.exec(msg.channel)[2];
+    let remote_id = (msg.channel).replace('product_cash_', '').split('_')[1];
     let market = this._tickerSubs.get(remote_id);
     if (!market) return;
 
