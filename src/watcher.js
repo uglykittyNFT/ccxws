@@ -51,7 +51,7 @@ class Watcher {
    */
   _onCheck() {
     if (!this._lastMessage || this._lastMessage < Date.now() - this.intervalMs) {
-      console.log(new Date(), "ON CHECK - RECONNECT");
+//       console.log(new Date(), "ON CHECK - RECONNECT");
       this._reconnect();
     }
   }
